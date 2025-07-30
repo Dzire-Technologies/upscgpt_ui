@@ -1,0 +1,57 @@
+
+.Landing {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #E4E7FB 100%, #fff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.LandingContainer {
+  max-width: 1200px;
+  width: 100%;
+  gap: 60px;
+  align-items: center;
+}
+
+.HeroSection {
+  text-align: center;
+  color: white;
+}
+
+.HeroTitle {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #4d5064;
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.HeroSubtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.AuthSection {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .LandingContainer {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    text-align: center;
+  }
+  
+  .HeroTitle {
+    font-size: 2.5rem;
+  }
+  
+  .HeroSubtitle {
+    font-size: 1rem;
+  }
+}

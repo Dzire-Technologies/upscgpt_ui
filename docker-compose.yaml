@@ -1,0 +1,11 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_URL=https://api.indiantaxgpt.com
+    ports:
+      - "4000:80"
+    volumes:
+      - .:/app
