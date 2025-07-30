@@ -6,6 +6,6 @@ services:
       args:
         - BACKEND_URL=https://api.indianupscgpt.com/
     ports:
-      - "4000:80"
+      - "4001:8080"
     volumes:
       - .:/app
