@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - BACKEND_URL=https://api.indiantaxgpt.com
+        - BACKEND_URL=https://api.indianupscgpt.com/
     ports:
       - "4000:80"
     volumes:
