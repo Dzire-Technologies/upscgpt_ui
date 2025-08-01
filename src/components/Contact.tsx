@@ -55,7 +55,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Email</p>
-                    <p className="text-sm text-gray-600">support@dziretechnologies.com</p>
+                    <p className="text-sm text-gray-600">Dzireitsolution@gmail.com</p>
                   </div>
                 </div>
                 
@@ -65,7 +65,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Phone</p>
-                    <p className="text-sm text-gray-600">+91 9876543210</p>
+                    <p className="text-sm text-gray-600">+91 7454873603</p>
                   </div>
                 </div>
                 
@@ -75,7 +75,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Address</p>
-                    <p className="text-sm text-gray-600">Mumbai, Maharashtra, India</p>
+                    <p className="text-sm text-gray-600">Mahadevpura, Bengaluru, India</p>
                   </div>
                 </div>
                 
