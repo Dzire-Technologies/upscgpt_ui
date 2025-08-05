@@ -114,3 +114,11 @@
   font-size: 0.95rem;
   margin: 24px 0;
 }
+
+@media (max-width: 768px) {
+
+  .LoginGoogle {
+    padding: 16px 22px;
+  }
+
+}
