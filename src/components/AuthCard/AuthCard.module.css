@@ -87,6 +87,10 @@
 
 }
 
+.LoginGoogle:hover {
+  background: #F0F0F0;
+}
+
 .LoginGoogle img {
     width: 23px;
     height: 23px;
