@@ -1,10 +1,10 @@
-name: Deploy IndianUPSCGPT
+name: Deploy Frontend
 
 on:
   push:
     branches:
-      - main  # Triggers on push to main branch
-  workflow_dispatch:  # Allows manual trigger from GitHub Actions UI
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,43 +24,32 @@ jobs:
           script: |
             echo "🚀 Starting deployment..."
             
-            # Navigate to app directory
             cd ${{ secrets.APP_PATH }}
-            
-            # Pull latest changes from main branch
+
             echo "📦 Pulling latest code..."
             git pull origin main
             
-            # Use production docker-compose file
             echo "🔧 Setting up production configuration..."
             cp docker-compose.prod.yaml docker-compose.yaml
             
-            # Stop and remove ONLY indianupscgpt-frontend containers (not other containers)
-            echo "🛑 Stopping indianupscgpt-frontend container only..."
-            docker compose stop indianupscgpt-frontend 2>/dev/null || true
-            docker compose rm -f indianupscgpt-frontend 2>/dev/null || true
+            echo "🛑 Stopping frontend container only..."
+            docker compose stop frontend 2>/dev/null || true
+            docker compose rm -f frontend 2>/dev/null || true
             
-            # Remove old indianupscgpt-frontend images only
-            echo "🧹 Cleaning up old indianupscgpt-frontend images..."
-            docker images | grep indiantaxgpt-frontend | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+            echo "🧹 Cleaning up old frontend images..."
+            docker images | grep indianupscgpt-frontend | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
             
-            # Build with no cache to ensure fresh build
             echo "🔨 Building Docker image..."
-            docker compose build --no-cache indianupscgpt-frontend
+            docker compose build --no-cache frontend
             
-            # Start ONLY indianupscgpt-frontend container in detached mode
-            echo "🎬 Starting indianupscgpt-frontend container..."
-            docker compose up -d indianupscgpt-frontend
+            echo "🎬 Starting frontend container..."
+            docker compose up -d frontend
             
-            # Show indianupscgpt-frontend container status
-            echo "✅ Deployment complete! indianupscgpt-frontend container status:"
-            docker compose ps indianupscgpt-frontend
+            echo "✅ Deployment complete! Frontend container status:"
+            docker compose ps frontend
             
-            # Show indianupscgpt-frontend logs only
-            echo "📋 Recent indianupscgpt-frontend logs:"
-            docker compose logs --tail=50 indianupscgpt-frontend
+            echo "📋 Recent frontend logs:"
+            docker compose logs --tail=50 frontend
             
-            # Verify container is healthy
             echo "🏥 Health check:"
-            docker inspect --format='{{.State.Health.Status}}' indiantaxgpt-frontend 2>/dev/null || echo "Container running (no health check)"
-
+            docker inspect --format='{{.State.Health.Status}}' indianupscgpt-frontend 2>/dev/null || echo "Container running (no health check)"
