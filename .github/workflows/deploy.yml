@@ -35,30 +35,30 @@ jobs:
             echo "🔧 Setting up production configuration..."
             cp docker-compose.prod.yaml docker-compose.yaml
             
-            # Stop and remove ONLY indianupscgpt containers (not other containers)
-            echo "🛑 Stopping indianupscgpt container only..."
-            docker compose stop indianupscgpt 2>/dev/null || true
-            docker compose rm -f indianupscgpt 2>/dev/null || true
+            # Stop and remove ONLY indianupscgpt-frontend containers (not other containers)
+            echo "🛑 Stopping indianupscgpt-frontend container only..."
+            docker compose stop indianupscgpt-frontend 2>/dev/null || true
+            docker compose rm -f indianupscgpt-frontend 2>/dev/null || true
             
-            # Remove old indianupscgpt images only
-            echo "🧹 Cleaning up old indianupscgpt images..."
+            # Remove old indianupscgpt-frontend images only
+            echo "🧹 Cleaning up old indianupscgpt-frontend images..."
             docker images | grep indiantaxgpt-frontend | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
             
             # Build with no cache to ensure fresh build
             echo "🔨 Building Docker image..."
-            docker compose build --no-cache indianupscgpt
+            docker compose build --no-cache indianupscgpt-frontend
             
-            # Start ONLY indianupscgpt container in detached mode
-            echo "🎬 Starting indianupscgpt container..."
-            docker compose up -d indianupscgpt
+            # Start ONLY indianupscgpt-frontend container in detached mode
+            echo "🎬 Starting indianupscgpt-frontend container..."
+            docker compose up -d indianupscgpt-frontend
             
-            # Show indianupscgpt container status
-            echo "✅ Deployment complete! indianupscgpt container status:"
-            docker compose ps indianupscgpt
+            # Show indianupscgpt-frontend container status
+            echo "✅ Deployment complete! indianupscgpt-frontend container status:"
+            docker compose ps indianupscgpt-frontend
             
-            # Show indianupscgpt logs only
-            echo "📋 Recent indianupscgpt logs:"
-            docker compose logs --tail=50 indianupscgpt
+            # Show indianupscgpt-frontend logs only
+            echo "📋 Recent indianupscgpt-frontend logs:"
+            docker compose logs --tail=50 indianupscgpt-frontend
             
             # Verify container is healthy
             echo "🏥 Health check:"
