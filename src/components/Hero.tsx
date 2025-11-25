@@ -86,7 +86,7 @@ const Hero = () => {
                 </h1>
                 
                 <p className="text-xl text-gray-600 leading-relaxed">
-                  Get instant, accurate answers to doubts, topic explanations, and previous year questions —
+                  Get instant, accurate answers to GS doubts, topic explanations, and previous year questions —
                   all powered by AI trained for UPSC preparation.
                 </p>
               </div>
