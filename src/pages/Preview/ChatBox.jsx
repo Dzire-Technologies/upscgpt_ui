@@ -8,8 +8,9 @@ import { useNavigate, useParams } from "react-router-dom"
 import EmptyPreview from "./EmptyPreview"
 import { toast } from "react-toastify"
 import { isEmptyJSON } from "src/utils/utils"
-import { GetUserDetails, getBackendToken } from "src/services/Auth";
+import { GetUserDetails } from "src/services/Auth";
 import { useChatHistory } from "src/context/ChatHistoryContext"
+import { useTokenStore } from "src/store/authStore";
 
 const PreviewChatBox = ({ urlPrex = "/preview" }) => {
     const [feedbackStatus, setFeedbackStatus] = useState(false);
@@ -25,10 +26,28 @@ const PreviewChatBox = ({ urlPrex = "/preview" }) => {
     const { contextId } = useParams()
     const navigate = useNavigate()
     const messageBoxRef = useRef(null)
-    
+
+    // Get token either from zustand store or fallback to localStorage
+    const tokenFromStore = useTokenStore((s) => s.token) || localStorage.getItem('x_token');
+
+    // Fetch user profile from backend using token
     const fetchUser = async () => {
-        const supauser = await GetUserDetails();
-        return supauser?.data?.user_metadata || null;
+        try {
+            const token = tokenFromStore;
+            if (!token) return null;
+            const profile = await GetUserDetails(token); // expects backend profile response structure
+            // Return shape expected by the rest of the component
+            return {
+                email: profile?.email,
+                name: profile?.name,
+                picture: profile?.profile_pic || profile?.picture,
+                token: token,
+                sub: profile?.email || profile?.name, // preserve the previous sub field semantics
+            };
+        } catch (e) {
+            console.error("Failed to fetch user profile:", e);
+            return { token: tokenFromStore || null };
+        }
     };
 
     // Memoized bot message template
@@ -274,10 +293,11 @@ const PreviewChatBox = ({ urlPrex = "/preview" }) => {
         }
     }, [user?.token]);
 
-    // Improved chat history retrieval
+    // Improved chat history retrieval depends on token now
     const getChatHistory = useCallback(async () => {
         try {
-            const response = await fetch(`${API_URL}/profile`, {
+            if (!user?.token) return;
+            const response = await fetch(`${API_URL}/chat/history`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -286,8 +306,8 @@ const PreviewChatBox = ({ urlPrex = "/preview" }) => {
             });
 
             const data = await response.json()
-            
-            const chats = data.chats
+
+            const chats = data.chats || data.data?.chats
             if (!chats) return;
 
             const chatHistory = Object.entries(chats).map(([chatContextId, chatQuery]) => ({
@@ -302,7 +322,7 @@ const PreviewChatBox = ({ urlPrex = "/preview" }) => {
             console.error("Error fetching chat history:", error);
             toast.error("Failed to load chat history");
         }
-    }, [setChatHistory, user?.sub]);
+    }, [setChatHistory, user?.token]);
 
     const generateContextUUID = useCallback(() => uuidv4(), []);
 
@@ -343,39 +363,31 @@ const PreviewChatBox = ({ urlPrex = "/preview" }) => {
         }
     }, [contextId, getChatByContexts]);
 
-    useEffect(() => {
-        getChatHistory();
-        if (!contextId) {
-            onCreateNewChat();
-        }
-    }, [contextId, onCreateNewChat]);
-
+    // On mount: fetch user profile (if token exists)
     useEffect(() => {
         if (!user || Object.keys(user).length === 0) {
             const getUser = async () => {
                 const metadata = await fetchUser();
-                let token = "";
                 if (metadata) {
-                    let token = localStorage.getItem("x_token");
-                    if (!token) {
-                        const stoken = await getBackendToken(metadata);
-                        if (stoken?.data?.data?.x_token) {
-                            token = stoken.data.data.x_token;
-                            localStorage.setItem("x_token", token);
-                        }
-                    }
-                    setUser({ ...metadata, token });
+                    setUser(metadata);
                 }
             };
             getUser();
         }
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // run once on mount
 
+    // Trigger chat history load whenever a valid token on `user` appears
+    // Run only once when user.token becomes available or contextId changes
     useEffect(() => {
-        if (user?.sub) {
+        if (user?.token) {
             getChatHistory();
+            if (!contextId) {
+                onCreateNewChat();
+            }
         }
-    }, [user?.sub, getChatHistory]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.token, contextId]); // Only depend on token and contextId, not the functions
 
     return (
         <ChatBox

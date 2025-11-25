@@ -1,44 +1,23 @@
-
-import { useState, useEffect } from 'react'
-import { supabase } from 'src/integrations/supabase/client'
-import { useNavigate } from 'react-router-dom'
+// src/pages/Landing/Landing.jsx
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import { useTokenStore } from "src/store/authStore";
 
 const Landing = () => {
-  const [user, setUser] = useState(null)
-  const [session, setSession] = useState(null)
-  const navigate = useNavigate()
+  const token = useTokenStore((state) => state.token) || localStorage.getItem("x_token");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        // Redirect to dashboard if authenticated
-        if (session?.user) {
-          navigate('/preview')
-        }
-      }
-    )
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        navigate('/preview')
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [navigate])
+    if (token) {
+      // if authenticated, go to preview which will route to /preview/:uuid/chat
+      navigate("/preview");
+    }
+  }, [token, navigate]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -48,7 +27,7 @@ const Landing = () => {
       <Contact />
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Landing
+export default Landing;

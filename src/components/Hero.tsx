@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, CheckCircle, Bot, FileText, Calculator, X } from "lucide-react";
+import { ArrowRight, CheckCircle, Bot, X } from "lucide-react";
 import AuthCard from '@/components/AuthCard/AuthCard'
 
 // ArcadeEmbed component

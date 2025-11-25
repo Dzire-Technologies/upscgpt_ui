@@ -1,0 +1,66 @@
+name: Deploy IndianUPSCGPT
+
+on:
+  push:
+    branches:
+      - main  # Triggers on push to main branch
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            echo "🚀 Starting deployment..."
+            
+            # Navigate to app directory
+            cd ${{ secrets.APP_PATH }}
+            
+            # Pull latest changes from main branch
+            echo "📦 Pulling latest code..."
+            git pull origin main
+            
+            # Use production docker-compose file
+            echo "🔧 Setting up production configuration..."
+            cp docker-compose.prod.yaml docker-compose.yaml
+            
+            # Stop and remove ONLY indianupscgpt containers (not other containers)
+            echo "🛑 Stopping indianupscgpt container only..."
+            docker compose stop indianupscgpt 2>/dev/null || true
+            docker compose rm -f indianupscgpt 2>/dev/null || true
+            
+            # Remove old indianupscgpt images only
+            echo "🧹 Cleaning up old indianupscgpt images..."
+            docker images | grep indiantaxgpt-frontend | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+            
+            # Build with no cache to ensure fresh build
+            echo "🔨 Building Docker image..."
+            docker compose build --no-cache indianupscgpt
+            
+            # Start ONLY indianupscgpt container in detached mode
+            echo "🎬 Starting indianupscgpt container..."
+            docker compose up -d indianupscgpt
+            
+            # Show indianupscgpt container status
+            echo "✅ Deployment complete! indianupscgpt container status:"
+            docker compose ps indianupscgpt
+            
+            # Show indianupscgpt logs only
+            echo "📋 Recent indianupscgpt logs:"
+            docker compose logs --tail=50 indianupscgpt
+            
+            # Verify container is healthy
+            echo "🏥 Health check:"
+            docker inspect --format='{{.State.Health.Status}}' indiantaxgpt-frontend 2>/dev/null || echo "Container running (no health check)"
+
