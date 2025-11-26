@@ -43,7 +43,8 @@ jobs:
             docker compose build --no-cache frontend
             
             echo "🎬 Starting frontend container..."
-            docker compose up -p indianupscgpt-frontend -d indianupscgpt-frontend
+            docker compose -p indianupscgpt-frontend up -d indianupscgpt-frontend
+
             
             echo "✅ Deployment complete! Frontend container status:"
             docker compose ps indianupscgpt-frontend
