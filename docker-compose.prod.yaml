@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  frontend:
+  indianupscgpt-frontend:
     container_name: indianupscgpt-frontend
     image: indianupscgpt-frontend-image
     build:
