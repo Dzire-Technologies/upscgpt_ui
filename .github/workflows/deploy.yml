@@ -32,7 +32,7 @@ jobs:
             echo "🔧 Setting up production configuration..."
             cp docker-compose.prod.yaml docker-compose.yaml
             
-            echo "🛑 Stopping fronindiantaxgpt-frontendtend container only..."
+            echo "🛑 Stopping indianupscgpt-frontend container only..."
             docker compose stop indiantaxgpt-frontend 2>/dev/null || true
             docker compose rm -f indiantaxgpt-frontend 2>/dev/null || true
             
@@ -43,13 +43,13 @@ jobs:
             docker compose build --no-cache frontend
             
             echo "🎬 Starting frontend container..."
-            docker compose up -p indiantaxgpt-frontend -d indiantaxgpt-frontend
+            docker compose up -p indianupscgpt-frontend -d indianupscgpt-frontend
             
             echo "✅ Deployment complete! Frontend container status:"
-            docker compose ps fronindiantaxgpt-frontendtend
+            docker compose ps indianupscgpt-frontend
             
-            echo "📋 Recent indiantaxgpt-frontend logs:"
-            docker compose logs --tail=50 indiantaxgpt-frontend
+            echo "📋 Recent indianupscgpt-frontend logs:"
+            docker compose logs --tail=50 indianupscgpt-frontend
             
             echo "🏥 Health check:"
             docker inspect --format='{{.State.Health.Status}}' indianupscgpt-frontend 2>/dev/null || echo "Container running (no health check)"
